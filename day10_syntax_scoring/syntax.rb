@@ -43,18 +43,3 @@ def get_key_value(char)
     []
   end
 end
-
-def get_points(char)
-  case char
-  when '('
-    3
-  when '['
-    57
-  when '{'
-    1197
-  when '<'
-    25137
-  else
-    # type code here
-  end
-end
