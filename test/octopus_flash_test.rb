@@ -8,7 +8,7 @@ class OctopusFlashTest < Minitest::Test
     assert_equal 1656, flash('day11_dumbo_octopus/test_input.txt', 100)
   end
 
-  def test_octopus_flash
+  def test_real_octopus_flash
     assert_equal 1571, flash('day11_dumbo_octopus/input.txt', 100)
   end
 
