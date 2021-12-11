@@ -2,6 +2,7 @@ class Board
   def initialize(lines)
     @board = lines.map { |line| line.split(' ').map(&:to_i) }
     @matches = Array.new(5, []).map { |sub| Array.new(5, 0) }
+    @solved = false
   end
 
   def mark(number)
@@ -9,12 +10,25 @@ class Board
       row.each_with_index do |column, column_index|
         if column == number
           @matches[row_index][column_index] = 1
-          return true if row_has_bingo(@matches) || row_has_bingo(@matches.dup.transpose)
+          @solved = true if row_has_bingo(@matches) || row_has_bingo(@matches.dup.transpose)
+          return true
         end
       end
     end
 
     false
+  end
+
+  def set_position(pos)
+    @position = pos
+  end
+
+  def position
+    @position
+  end
+
+  def solved?
+    @solved
   end
 
   def unmarked_count

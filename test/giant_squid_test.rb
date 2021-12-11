@@ -7,6 +7,6 @@ class BingoTest < Minitest::Test
   end
 
   def test_real_measurement_should_return_expected_value
-    assert_equal 74100, bingo('day4_giant_squid/vert_test_input.txt')
+    assert_equal 35670, bingo('day4_giant_squid/input.txt')
   end
 end
