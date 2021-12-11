@@ -8,8 +8,16 @@ class OctopusFlashTest < Minitest::Test
     assert_equal 1656, flash('day11_dumbo_octopus/test_input.txt', 100)
   end
 
+  def test_octopus_synchronize
+    assert_equal 195, synchronize('day11_dumbo_octopus/test_input.txt')
+  end
+
   def test_real_octopus_flash
     assert_equal 1571, flash('day11_dumbo_octopus/input.txt', 100)
+  end
+
+  def test_real_octopus_synchronize
+    assert_equal 387, synchronize('day11_dumbo_octopus/input.txt')
   end
 
   def test_increase_energy_level_only_increase
@@ -26,7 +34,7 @@ class OctopusFlashTest < Minitest::Test
         [2, 2, 2]
       ]
     board = Board.new(input)
-    simulate_step(board)
+    board.simulate_step
 
     assert_equal expected, board.board
   end
@@ -45,7 +53,7 @@ class OctopusFlashTest < Minitest::Test
         [2, 2, 2]
       ]
     board = Board.new(input)
-    simulate_step(board)
+    board.simulate_step
 
     assert_equal expected, board.board
   end
@@ -68,7 +76,7 @@ class OctopusFlashTest < Minitest::Test
         [3, 4, 5, 4, 3]
       ]
     board = Board.new(input)
-    simulate_step(board)
+    board.simulate_step
 
     assert_equal expected, board.board
   end
@@ -91,7 +99,7 @@ class OctopusFlashTest < Minitest::Test
         [0, 0, 0, 0, 0]
       ]
     board = Board.new(input)
-    simulate_step(board)
+    board.simulate_step
 
     assert_equal expected, board.board
   end
@@ -114,7 +122,7 @@ class OctopusFlashTest < Minitest::Test
         [4, 5, 6, 5, 4]
       ]
     board = Board.new(input)
-    simulate_step(board)
+    board.simulate_step
 
     assert_equal expected, board.board
   end
