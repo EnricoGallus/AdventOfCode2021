@@ -7,6 +7,6 @@ class FindShortestPathTest < Minitest::Test
   end
 
   def test_real_find_shortest_cost
-    assert_equal 40, find_path('day15_chiton/input.txt')
+    assert_equal 592, find_path('day15_chiton/input.txt')
   end
 end
