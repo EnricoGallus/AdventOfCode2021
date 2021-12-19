@@ -1,40 +1,65 @@
+require_relative 'package'
+
 def package_decoder(file_name)
   decoded = decode(File.read(file_name))
+  determine_version(decoded)
+end
+
+def determine_version(decoded)
   packages = []
-  parse(decoded, packages) until decoded.empty?
-  packages
+  parse(decoded, packages)
+  packages.compact.sum { |package| package.version }
 end
 
 def decode(content)
   content.split('').map { |char| char.hex.to_s(2).rjust(4, '0') }.join.split('')
 end
 
-def parse(content, packages, continue_parse = true)
-  return if content.empty?
+def parse(content, packages)
+  unless content.empty?
+    content, package = convert_to_package(content)
+    unless package.nil?
+      packages.push(package)
+      case package.length
+      when 1
+        sub_contents = []
+        package.sub_count.times do
+          content, package = convert_to_package(content)
+          unless package.nil?
+            packages.push(package)
+            sub_contents.push(!package.sub_packages.nil? ? package.sub_packages : content)
+          end
+        end
+        sub_contents.each { |sub_content| parse(sub_content, packages) }
+      when 0
+        parse(package.sub_packages, packages)
+      end
+    end
 
-  version = content.shift(3).join.to_i(2)
-  type = content.shift(3).join.to_i(2)
-  length_type = nil
-  case type
+    parse(content, packages)
+  end
+end
+
+def convert_to_package(content)
+  return [[], nil] if content.length <= 8
+
+  package = Package.new(content.shift(3).join.to_i(2), content.shift(3).join.to_i(2))
+  case package.type
   when 4 # literal
-    group_length = content.length
     groups = read_literal_group(content)
-    packages.push([version, type, length_type, groups.flatten.join.to_i(2)])
-    content.shift(group_length % 5) if content.length <= 6
-    parse(content, packages, continue_parse) if continue_parse
+    package.literal = groups.flatten.join.to_i(2)
+    [content, package]
   else # operator
-    length_type = content.shift(1)[0].to_i
-    packages.push([version, type, length_type, nil])
-    case length_type
+    package.length = content.shift(1)[0].to_i
+    case package.length
     when 0
       subpackages = content.shift(content.shift(15).join.to_i(2))
-      parse(subpackages, packages, continue_parse)
+      package.sub_packages = subpackages
+      [content, package]
     when 1
       subpackages_count = content.shift(11).join.to_i(2)
-      subpackages_count.times do
-        parse(content, packages, false)
-      end
-      continue_parse = true
+      package.sub_count = subpackages_count
+      [content, package]
     end
   end
 end
