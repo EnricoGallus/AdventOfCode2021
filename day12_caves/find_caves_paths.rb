@@ -19,7 +19,9 @@ def find_paths(all_caves, current_cave, current_path, possible_paths)
     paths = all_caves[current_cave]
     paths.each do |exit|
       next if exit == 'start'
-      next if exit != exit.upcase && current_path.include?(exit)
+      #next if exit != exit.upcase && current_path.include?(exit)
+      hashed_paths = current_path.select { |exit| exit != exit.upcase && exit != 'start' && exit != 'end' }.tally
+      next if hashed_paths.key?(exit) && (hashed_paths.values.include? 2 || hashed_paths[exit] == 1)
 
       next_path = current_path.clone
       find_paths(all_caves, exit, next_path, possible_paths)
