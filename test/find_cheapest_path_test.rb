@@ -15,6 +15,6 @@ class FindCheapestPathTest < Minitest::Test
   end
 
   def test_real_find_path_five_times_larger
-    assert_equal 2905, five_time_larger('day15_chiton/input.txt')
+    assert_equal 2897, five_time_larger('day15_chiton/input.txt')
   end
 end

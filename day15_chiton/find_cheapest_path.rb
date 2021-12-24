@@ -1,7 +1,6 @@
 def find_cheapest_path(file_name)
   board = construct_board(file_name)
-  board[0][0] = 0
-  calculate_costs(board, [0, 0])
+  dijkstra(board)
 end
 
 def five_time_larger(file_name)
@@ -14,8 +13,7 @@ def five_time_larger(file_name)
     board.select { |line| new_board.push(line.map { |value| value + y > 9 ? value + y - 9 : value + y }) }
   end
 
-  new_board[0][0] = 0
-  calculate_costs(new_board, [0, 0])
+  dijkstra(new_board)
 end
 
 def construct_board(file_name)
@@ -24,20 +22,49 @@ def construct_board(file_name)
       .collect { |line| line.split('').map(&:to_i) }
 end
 
+def dijkstra(board)
+  queue = Queue.new
+  distance = {}
+  board.each_with_index do |row, y_index|
+    row.each_with_index { |value, x_index| distance[[x_index, y_index]] = Float::INFINITY }
+  end
+  start_pos = [0, 0]
+  end_pos = [board[0].length - 1, board.length - 1]
+  distance[start_pos] = 0
+  queue.push([0, start_pos])
+  d_pos = [[0, 1], [1, 0], [-1, 0], [0, -1]]
+
+  until queue.empty?
+    current_distance, current_node = queue.pop
+    next if current_distance > distance[current_node]
+
+    x, y = current_node
+    d_pos.each do |next_pos|
+      next_x, next_y = next_pos
+      dx = next_x + x
+      dy = next_y + y
+      next unless dx >= 0 && dx <= end_pos[0] && dy >= 0 && dy <= end_pos[1]
+
+      cost = current_distance + board[dx][dy]
+      if cost < distance[[dx, dy]]
+        distance[[dx, dy]] = cost
+        queue.push([cost, [dx, dy]])
+      end
+    end
+  end
+
+  distance[end_pos]
+end
+
 def calculate_costs(board, current)
   x, y = current
   board[x][y] = cheapest_cost(board, x, y)
-  return board[x][y] if x == board[0].length - 1 && y == board.length - 1
 
-  (x + 1..(board[0].length - 1)).each do |x|
+  (x..(board[0].length - 1)).each do |x|
     board[x][y] = cheapest_cost(board, x, y)
   end
 
-  (y + 1..(board.length - 1)).each do |y|
-    board[x][y] = cheapest_cost(board, x, y)
-  end
-
-  calculate_costs(board, [x + 1, y + 1])
+  calculate_costs(board, [x, y + 1]) if y < board.length - 1
 end
 
 def cheapest_cost(board, x, y)

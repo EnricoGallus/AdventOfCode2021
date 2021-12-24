@@ -24,6 +24,6 @@ class PolymerTest < Minitest::Test
   end
 
   def test_real_pair_insertion_fourty_times
-    assert_equal 2947, pair_insertion('day14_polymer/input.txt', 40)
+    assert_equal 3232426226464, pair_insertion('day14_polymer/input.txt', 40)
   end
 end
