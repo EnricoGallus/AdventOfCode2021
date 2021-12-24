@@ -1,11 +1,29 @@
 def pair_insertion(file_name, steps)
-  result = File.read(file_name).split("\n\n")
-  template = result[0]
-  chain = result[1].split("\n").map { |reaction| reaction.split(' -> ').flatten }.to_h
+  f = File.open(file_name)
+  template = f.gets.chomp
+  insertion_rules = f.read.scan(/(..)(?: -> )(.)/).to_h
+
+  pairs = template.chars.each_cons(2).tally
+  pairs.default = 0
+
   steps.times do
-    template = template.split('').map.with_index { |char, idx| idx.zero? ? char : chain[template[idx - 1] + char] + char }.join
+    next_pairs = {}
+    next_pairs.default = 0
+
+    pairs.each { |(a, b), tally|
+      i = insertion_rules[a + b]
+
+      next_pairs[[a, i]] += tally
+      next_pairs[[i, b]] += tally
+    }
+    pairs = next_pairs
   end
 
-  polymer = template.split('').tally
-  polymer.max_by { |k, v| v }[1] - polymer.min_by { |k, v| v }[1]
+  totals = {}
+  totals.default = 0
+  pairs.each { |(a, b), tally| totals[a] += tally }
+  totals[template.chars.last] += 1
+
+  min, max = totals.values.minmax
+  max - min
 end
